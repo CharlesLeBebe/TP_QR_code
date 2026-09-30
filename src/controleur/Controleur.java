@@ -24,6 +24,8 @@ public class Controleur {
                 Donnees donnees = new Donnees(saisie);
                 GenerateurPDF.creerPDF(donnees.getTexte(), "document.pdf");
                 JOptionPane.showMessageDialog(fenetre, "PDF généré avec succès !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+                String cheminQRCode = "qrcode.png";
+                GenerateurQRCode.creerQRCode(donnees.getTexte(), 200, 200, cheminQRCode);
             }
         });
     }
