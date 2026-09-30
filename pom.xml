@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>tp_qr_code</groupId>
+  <artifactId>tp_qr_code</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+  <dependencies>
+      <!-- iText (pour la génération des PDF) -->
+      <dependency>
+          <groupId>com.itextpdf</groupId>
+          <artifactId>itextpdf</artifactId>
+          <version>5.5.13.3</version>
+      </dependency>
+
+      <!-- ZXing Core (pour la génération des QR codes) -->
+      <dependency>
+          <groupId>com.google.zxing</groupId>
+          <artifactId>core</artifactId>
+          <version>3.5.3</version>
+      </dependency>
+
+      <!-- ZXing Java SE (pour convertir le QR code en image) -->
+      <dependency>
+          <groupId>com.google.zxing</groupId>
+          <artifactId>javase</artifactId>
+          <version>3.5.3</version>
+      </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>17</release>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
