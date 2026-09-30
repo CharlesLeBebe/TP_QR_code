@@ -2,25 +2,22 @@ package vue;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class Fenetre extends JFrame {
     private JTextField champTexte;
     private JButton boutonGenerer;
 
     public Fenetre() {
-        
-        setTitle("Générateur de pdf et QR Code");
+        setTitle("Générateur pdf et QR Code");
         setSize(400, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); 
-
-
+        setLocationRelativeTo(null);
         setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
 
-    
-        JLabel label = new JLabel("Entrez votre texte ou lien :");
-        champTexte = new JTextField(25); 
-        boutonGenerer = new JButton("Générer"); 
+        JLabel label = new JLabel("Entrez votre texte :");
+        champTexte = new JTextField(25);
+        boutonGenerer = new JButton("Générer le PDF");
 
         add(label);
         add(champTexte);
@@ -31,10 +28,7 @@ public class Fenetre extends JFrame {
         return champTexte.getText();
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Fenetre fenetre = new Fenetre();
-            fenetre.setVisible(true);
-        });
+    public void addGenererListener(ActionListener listener) {
+        boutonGenerer.addActionListener(listener);
     }
 }
