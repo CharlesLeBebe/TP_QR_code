@@ -1,4 +1,4 @@
-package controleur;
+package modele;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -9,7 +9,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-class GenerateurPDF {
+public class GenerateurPDF {
 
     public static void creerPDF(String texteSaisi, String cheminQRCode, String cheminSortiePDF) {
         Document document = new Document();

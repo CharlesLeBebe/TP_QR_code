@@ -1,6 +1,8 @@
 package controleur;
 
 import modele.Donnees;
+import modele.GenerateurPDF;
+import modele.GenerateurQRCode;
 import vue.Fenetre;
 
 import javax.swing.*;

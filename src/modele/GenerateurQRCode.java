@@ -1,4 +1,4 @@
-package controleur;
+package modele;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
-class GenerateurQRCode {
+public class GenerateurQRCode {
 
     public static void creerQRCode(String texte, int largeur, int hauteur, String cheminSortie) {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
