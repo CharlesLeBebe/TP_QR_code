@@ -10,6 +10,7 @@ Le projet utilise également les bibliothèques ZXing pour la génération des Q
 
 ## Arborescence du projet
 
+```text
 tp_qr_code/
 ├── pom.xml
 ├── README.md
