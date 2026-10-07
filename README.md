@@ -6,7 +6,7 @@ Ce projet consiste à développer une application Java permettant de générer u
 
 L'application possède une interface graphique réalisée avec Java Swing et utilise l'architecture MVC afin de séparer les différentes parties du programme.
 
-Le projet utilise également les bibliothèques ZXing pour la génération des QR Codes, iText pour la création des fichiers PDF et JUnit pour réaliser les tests unitaires.
+Le projet utilise également les bibliothèques ZXing pour la génération des QR Codes, iText pour la création des fichiers ET pour les polices d'écriture PDF et JUnit pour réaliser les tests unitaires.
 
 ## Arborescence du projet
 
@@ -16,13 +16,17 @@ tp_qr_code/
 ├── README.md
 └── src/
     ├── controleur/
-    │   └── Controleur.java  
+    │   └── Controleur.java
     ├── modele/
-    │   ├── Donnees.java        
-    │   ├── DonneesTest.java 
+    │   ├── Donnees.java
+    │   ├── DonneesTest.java
     │   ├── GenerateurPDF.java
-    │   ├── GenerateurPDFTest.java
     │   ├── GenerateurQRCode.java
-    │   └──  GenerateurQRCodeTest.java    
-    ├── vue/
-        └── Fenetre.java        
+    │   ├── GestionnaireFichiers.java
+    │   ├── GestionnaireFichiersTest.java
+    │   ├── ProfilStyle.java
+    │   ├── ProfilStyleTest.java
+    │   ├── Projet.java
+    │   └── ProjetTest.java
+    └── vue/
+        └── Fenetre.java      
