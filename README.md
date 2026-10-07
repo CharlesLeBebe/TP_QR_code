@@ -30,7 +30,7 @@ tp_qr_code/
     │   └── ProjetTest.java
     └── vue/
         └── Fenetre.java      
-
+```
 
 # 1. Architecture Globale — Le motif MVC
 
