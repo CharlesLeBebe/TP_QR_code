@@ -12,7 +12,7 @@ public class Fenetre extends JFrame {
     private JButton boutonCouleur;
     private JButton boutonChoisirImage;
     private JLabel labelImageChoisie;
-    
+
     private JTextField champLargeurImage;
     private JComboBox<String> comboAlignementImage;
 
@@ -20,12 +20,16 @@ public class Fenetre extends JFrame {
     private JButton boutonSauvegarderProjet;
     private JButton boutonChargerProjet;
 
+
+    private JButton boutonSauvegarderProfil;
+    private JButton boutonChargerProfil;
+
     private Color couleurChoisie = Color.BLACK;
     private String cheminImageChoisie = "";
 
     public Fenetre() {
         setTitle("Générateur PDF, QR Code & Style");
-        setSize(540, 440);
+        setSize(560, 480);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
@@ -57,8 +61,7 @@ public class Fenetre extends JFrame {
         boutonCouleur.addActionListener(e -> {
             Color couleur = JColorChooser.showDialog(this, "Sélectionnez une couleur", couleurChoisie);
             if (couleur != null) {
-                couleurChoisie = couleur;
-                boutonCouleur.setBackground(couleurChoisie);
+                setCouleurChoisie(couleur);
             }
         });
 
@@ -91,9 +94,18 @@ public class Fenetre extends JFrame {
         gbc.gridx = 1; gbc.gridy = 5; gbc.gridwidth = 2;
         add(comboAlignementImage, gbc);
 
+        JPanel panneauProfil = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        boutonSauvegarderProfil = new JButton("Sauvegarder Profil");
+        boutonChargerProfil = new JButton("Charger Profil");
+        panneauProfil.add(boutonSauvegarderProfil);
+        panneauProfil.add(boutonChargerProfil);
+
+        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 3;
+        add(panneauProfil, gbc);
+
         boutonGenerer = new JButton("Générer le PDF");
         boutonGenerer.setFont(new Font("Arial", Font.BOLD, 14));
-        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 3;
+        gbc.gridx = 0; gbc.gridy = 7; gbc.gridwidth = 3;
         add(boutonGenerer, gbc);
 
         JPanel panneauProjet = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
@@ -102,7 +114,7 @@ public class Fenetre extends JFrame {
         panneauProjet.add(boutonSauvegarderProjet);
         panneauProjet.add(boutonChargerProjet);
 
-        gbc.gridx = 0; gbc.gridy = 7; gbc.gridwidth = 3;
+        gbc.gridx = 0; gbc.gridy = 8; gbc.gridwidth = 3;
         add(panneauProjet, gbc);
     }
 
@@ -144,4 +156,6 @@ public class Fenetre extends JFrame {
     public void addGenererListener(ActionListener listener) { boutonGenerer.addActionListener(listener); }
     public void addSauvegarderProjetListener(ActionListener listener) { boutonSauvegarderProjet.addActionListener(listener); }
     public void addChargerProjetListener(ActionListener listener) { boutonChargerProjet.addActionListener(listener); }
+    public void addSauvegarderProfilListener(ActionListener listener) { boutonSauvegarderProfil.addActionListener(listener); }
+    public void addChargerProfilListener(ActionListener listener) { boutonChargerProfil.addActionListener(listener); }
 }

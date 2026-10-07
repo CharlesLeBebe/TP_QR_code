@@ -4,8 +4,6 @@ import modele.*;
 import vue.Fenetre;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class Controleur {
     private Fenetre fenetre;
@@ -14,8 +12,12 @@ public class Controleur {
         this.fenetre = fenetre;
 
         this.fenetre.addGenererListener(e -> declencherGenerationGlobale());
+        
         this.fenetre.addSauvegarderProjetListener(e -> sauvegarderProjet());
         this.fenetre.addChargerProjetListener(e -> chargerProjet());
+
+        this.fenetre.addSauvegarderProfilListener(e -> sauvegarderProfil());
+        this.fenetre.addChargerProfilListener(e -> chargerProfil());
     }
 
     private void declencherGenerationGlobale() {
@@ -51,6 +53,45 @@ public class Controleur {
         }
     }
 
+    private void sauvegarderProfil() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Sauvegarder le profil de style");
+        if (fileChooser.showSaveDialog(fenetre) == JFileChooser.APPROVE_OPTION) {
+            String chemin = fileChooser.getSelectedFile().getAbsolutePath();
+            if (!chemin.endsWith(".style")) chemin += ".style";
+
+            ProfilStyle style = new ProfilStyle(
+                fenetre.getPoliceSelectionnee(),
+                12,
+                fenetre.getCouleurChoisie()
+            );
+
+            try {
+                GestionnaireFichiers.sauvegarderObjet(style, chemin);
+                JOptionPane.showMessageDialog(fenetre, "Profil de style sauvegardé !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(fenetre, "Erreur lors de la sauvegarde du profil : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void chargerProfil() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Charger un profil de style");
+        if (fileChooser.showOpenDialog(fenetre) == JFileChooser.APPROVE_OPTION) {
+            try {
+                ProfilStyle style = (ProfilStyle) GestionnaireFichiers.chargerObjet(fileChooser.getSelectedFile().getAbsolutePath());
+
+                fenetre.setPoliceSelectionnee(style.getNomPolice());
+                fenetre.setCouleurChoisie(style.getCouleurAwt());
+
+                JOptionPane.showMessageDialog(fenetre, "Profil de style appliqué avec succès !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(fenetre, "Fichier de profil invalide : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
     private void sauvegarderProjet() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Sauvegarder le projet");
@@ -69,7 +110,7 @@ public class Controleur {
 
             try {
                 GestionnaireFichiers.sauvegarderObjet(projet, chemin);
-                JOptionPane.showMessageDialog(fenetre, "Projet sauvegardé avec succès !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(fenetre, "Projet sauvegardé !", "Succès", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(fenetre, "Erreur de sauvegarde : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
             }
@@ -82,7 +123,7 @@ public class Controleur {
         if (fileChooser.showOpenDialog(fenetre) == JFileChooser.APPROVE_OPTION) {
             try {
                 Projet projet = (Projet) GestionnaireFichiers.chargerObjet(fileChooser.getSelectedFile().getAbsolutePath());
-                
+
                 fenetre.setTexteSaisi(projet.getTexte());
                 fenetre.setCheminImageChoisie(projet.getCheminImageComplementaire());
                 fenetre.setLargeurMaxImage(projet.getLargeurMaxImage());

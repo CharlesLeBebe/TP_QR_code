@@ -12,74 +12,35 @@ public class ProfilStyle implements Serializable {
 
     public static final String[] POLICES_DISPONIBLES = {
         FontFactory.HELVETICA,
-        FontFactory.COURIER,
         FontFactory.TIMES_ROMAN,
-        FontFactory.SYMBOL,
-        FontFactory.ZAPFDINGBATS
+        FontFactory.COURIER
     };
 
     private String nomPolice;
     private int taillePolice;
-    private int r; 
-    private int g; 
-    private int b; 
+    private Color couleurAwt;
 
-    public ProfilStyle() {
-     
-        this.nomPolice = FontFactory.HELVETICA;
-        this.taillePolice = 12;
-        this.r = 0;
-        this.g = 0;
-        this.b = 0;
-    }
-
-    public ProfilStyle(String nomPolice, int taillePolice, Color couleur) {
+    public ProfilStyle(String nomPolice, int taillePolice, Color couleurAwt) {
         this.nomPolice = nomPolice;
         this.taillePolice = taillePolice;
-        if (couleur != null) {
-            this.r = couleur.getRed();
-            this.g = couleur.getGreen();
-            this.b = couleur.getBlue();
-        } else {
-            this.r = 0;
-            this.g = 0;
-            this.b = 0;
-        }
-    }
-
-    public String getNomPolice() {
-        return nomPolice;
-    }
-
-    public void setNomPolice(String nomPolice) {
-        this.nomPolice = nomPolice;
-    }
-
-    public int getTaillePolice() {
-        return taillePolice;
-    }
-
-    public void setTaillePolice(int taillePolice) {
-        this.taillePolice = taillePolice;
-    }
-
-    public Color getCouleurAwt() {
-        return new Color(r, g, b);
-    }
-
-    public void setCouleurAwt(Color couleur) {
-        if (couleur != null) {
-            this.r = couleur.getRed();
-            this.g = couleur.getGreen();
-            this.b = couleur.getBlue();
-        }
-    }
-
-    public BaseColor getBaseColorIText() {
-        return new BaseColor(r, g, b);
+        this.couleurAwt = (couleurAwt != null) ? couleurAwt : Color.BLACK;
     }
 
     public Font getFontIText(int style, float taille) {
-        return FontFactory.getFont(nomPolice, taille, style, getBaseColorIText());
+        BaseColor baseColor = new BaseColor(
+            couleurAwt.getRed(),
+            couleurAwt.getGreen(),
+            couleurAwt.getBlue()
+        );
+        return FontFactory.getFont(nomPolice, taille, style, baseColor);
     }
+
+    public String getNomPolice() { return nomPolice; }
+    public void setNomPolice(String nomPolice) { this.nomPolice = nomPolice; }
+
+    public int getTaillePolice() { return taillePolice; }
+    public void setTaillePolice(int taillePolice) { this.taillePolice = taillePolice; }
+
+    public Color getCouleurAwt() { return couleurAwt; }
+    public void setCouleurAwt(Color couleurAwt) { this.couleurAwt = couleurAwt; }
 }
