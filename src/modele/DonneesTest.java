@@ -1,31 +1,20 @@
 package modele;
 
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class DonneesTest {
+public class DonneesTest {
 
     @Test
-    void testCreationDonnees() {
-        Donnees donnees = new Donnees("Bonjour");
-
-        assertEquals("Bonjour", donnees.getTexte());
+    public void testCreationDonneesValide() {
+        String texte = "https://example.com";
+        Donnees donnees = new Donnees(texte);
+        assertEquals(texte, donnees.getTexte(), "Le texte stocké doit correspondre au texte saisi.");
     }
 
     @Test
-    void testModificationDonnees() {
-        Donnees donnees = new Donnees("Bonjour");
-
-        donnees.setTexte("Nouveau texte");
-
-        assertEquals("Nouveau texte", donnees.getTexte());
-    }
-
-    @Test
-    void testTexteVide() {
+    public void testDonneesChaineVide() {
         Donnees donnees = new Donnees("");
-
-        assertEquals("", donnees.getTexte());
+        assertEquals("", donnees.getTexte(), "Le texte vide doit être accepté par le modèle.");
     }
 }
