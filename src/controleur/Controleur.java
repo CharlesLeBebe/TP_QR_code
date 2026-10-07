@@ -3,6 +3,7 @@ package controleur;
 import modele.Donnees;
 import modele.GenerateurPDF;
 import modele.GenerateurQRCode;
+import modele.ProfilStyle;
 import vue.Fenetre;
 
 import javax.swing.*;
@@ -31,27 +32,39 @@ public class Controleur {
             return;
         }
 
-       
         Donnees donnees = new Donnees(saisie);
+
+        ProfilStyle style = new ProfilStyle(
+            fenetre.getPoliceSelectionnee(),
+            12,
+            fenetre.getCouleurChoisie()
+        );
 
         String cheminQRCode = "qrcode.png";
         String cheminPDF = "document_avec_qr.pdf";
+        String cheminImageComplementaire = fenetre.getCheminImageChoisie();
 
         try {
             GenerateurQRCode.creerQRCode(donnees.getTexte(), 200, 200, cheminQRCode);
 
-            GenerateurPDF.creerPDF(donnees.getTexte(), cheminQRCode, cheminPDF);
+            GenerateurPDF.creerPDF(
+                donnees.getTexte(),
+                cheminQRCode,
+                cheminImageComplementaire,
+                style,
+                cheminPDF
+            );
 
-            JOptionPane.showMessageDialog(fenetre, 
-                "Succès ! Le PDF et le QR Code ont été générés.", 
-                "Opération réussie", 
+            JOptionPane.showMessageDialog(fenetre,
+                "Succès ! Le PDF stylisé a été généré.",
+                "Opération réussie",
                 JOptionPane.INFORMATION_MESSAGE);
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(fenetre, 
-                "Une erreur est survenue lors de la génération : " + ex.getMessage(), 
-                "Erreur", 
+            JOptionPane.showMessageDialog(fenetre,
+                "Une erreur est survenue lors de la génération : " + ex.getMessage(),
+                "Erreur",
                 JOptionPane.ERROR_MESSAGE);
         }
     }
