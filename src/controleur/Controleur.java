@@ -1,9 +1,6 @@
 package controleur;
 
-import modele.Donnees;
-import modele.GenerateurPDF;
-import modele.GenerateurQRCode;
-import modele.ProfilStyle;
+import modele.*;
 import vue.Fenetre;
 
 import javax.swing.*;
@@ -16,12 +13,9 @@ public class Controleur {
     public Controleur(Fenetre fenetre) {
         this.fenetre = fenetre;
 
-        this.fenetre.addGenererListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                declencherGenerationGlobale();
-            }
-        });
+        this.fenetre.addGenererListener(e -> declencherGenerationGlobale());
+        this.fenetre.addSauvegarderProjetListener(e -> sauvegarderProjet());
+        this.fenetre.addChargerProjetListener(e -> chargerProjet());
     }
 
     private void declencherGenerationGlobale() {
@@ -33,19 +27,13 @@ public class Controleur {
         }
 
         Donnees donnees = new Donnees(saisie);
-
-        ProfilStyle style = new ProfilStyle(
-            fenetre.getPoliceSelectionnee(),
-            12,
-            fenetre.getCouleurChoisie()
-        );
+        ProfilStyle style = new ProfilStyle(fenetre.getPoliceSelectionnee(), 12, fenetre.getCouleurChoisie());
 
         String cheminQRCode = "qrcode.png";
         String cheminPDF = "document_avec_qr.pdf";
 
         try {
             GenerateurQRCode.creerQRCode(donnees.getTexte(), 200, 200, cheminQRCode);
-
             GenerateurPDF.creerPDF(
                 donnees.getTexte(),
                 cheminQRCode,
@@ -56,17 +44,59 @@ public class Controleur {
                 cheminPDF
             );
 
-            JOptionPane.showMessageDialog(fenetre,
-                "Succès ! Le PDF avec l'image dimensionnée a été généré.",
-                "Opération réussie",
-                JOptionPane.INFORMATION_MESSAGE);
-
+            JOptionPane.showMessageDialog(fenetre, "Succès ! Le PDF a été généré.", "Opération réussie", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(fenetre,
-                "Une erreur est survenue : " + ex.getMessage(),
-                "Erreur",
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(fenetre, "Erreur : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void sauvegarderProjet() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Sauvegarder le projet");
+        if (fileChooser.showSaveDialog(fenetre) == JFileChooser.APPROVE_OPTION) {
+            String chemin = fileChooser.getSelectedFile().getAbsolutePath();
+            if (!chemin.endsWith(".ser")) chemin += ".ser";
+
+            ProfilStyle style = new ProfilStyle(fenetre.getPoliceSelectionnee(), 12, fenetre.getCouleurChoisie());
+            Projet projet = new Projet(
+                fenetre.getTexteSaisi(),
+                fenetre.getCheminImageChoisie(),
+                fenetre.getLargeurMaxImage(),
+                fenetre.getAlignementImage(),
+                style
+            );
+
+            try {
+                GestionnaireFichiers.sauvegarderObjet(projet, chemin);
+                JOptionPane.showMessageDialog(fenetre, "Projet sauvegardé avec succès !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(fenetre, "Erreur de sauvegarde : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void chargerProjet() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Charger un projet");
+        if (fileChooser.showOpenDialog(fenetre) == JFileChooser.APPROVE_OPTION) {
+            try {
+                Projet projet = (Projet) GestionnaireFichiers.chargerObjet(fileChooser.getSelectedFile().getAbsolutePath());
+                
+                fenetre.setTexteSaisi(projet.getTexte());
+                fenetre.setCheminImageChoisie(projet.getCheminImageComplementaire());
+                fenetre.setLargeurMaxImage(projet.getLargeurMaxImage());
+                fenetre.setAlignementImage(projet.getAlignementImage());
+
+                if (projet.getProfilStyle() != null) {
+                    fenetre.setPoliceSelectionnee(projet.getProfilStyle().getNomPolice());
+                    fenetre.setCouleurChoisie(projet.getProfilStyle().getCouleurAwt());
+                }
+
+                JOptionPane.showMessageDialog(fenetre, "Projet chargé avec succès !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(fenetre, "Erreur de chargement : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
