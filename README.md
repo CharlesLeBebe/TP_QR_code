@@ -221,3 +221,33 @@ Toutes les exceptions, notamment :
 - etc.
 
 sont interceptées et expliquées proprement à l'utilisateur par des messages pop-up.
+
+
+# Défis rencontrés t
+
+## 1. Erreur de découpage MVC 
+
+Au début du développement, la séparation des responsabilités entre le **Modèle**, la **Vue** et le **Contrôleur** n'était pas suffisamment claire.
+
+Le `Controleur` avait progressivement accumulé de nombreuses responsabilités qui ne lui appartenaient pas directement. Il était notamment chargé de :
+
+- Créer et gérer certains composants graphiques.
+- Gérer directement la génération des QR Codes
+- Gérer directement la génération des PDF
+
+Cette accumulation de responsabilités a rendu la classe `Controleur` particulièrement volumineuse. 
+
+
+## 2. Gestion des visibilités et des paquets 
+
+
+
+Lors du découpage du projet en plusieurs paquets, notamment `modele`, `vue` et `controleur`, un problème lié à la visibilité des classes et des méthodes est apparu.
+
+En Java, lorsqu'aucun modificateur de visibilité (`public`, `private` ou `protected`) n'est indiqué, l'élément possède une visibilité package-private.
+
+Cela signifie qu'il est uniquement accessible depuis les classes appartenant au même paquet.
+
+Après la séparation du projet en plusieurs packages, certaines classes ou méthodes devaient être utilisées depuis un autre paquet. Leur visibilité par défaut empêchait alors leur accès et provoquait des erreurs de compilation parfois difficiles à comprendre au premier abord.
+
+
