@@ -19,17 +19,17 @@ public class Fenetre extends JFrame {
     private JButton boutonGenerer;
     private JButton boutonSauvegarderProjet;
     private JButton boutonChargerProjet;
-
-
     private JButton boutonSauvegarderProfil;
     private JButton boutonChargerProfil;
+
+    private JProgressBar barreProgression;
 
     private Color couleurChoisie = Color.BLACK;
     private String cheminImageChoisie = "";
 
     public Fenetre() {
         setTitle("Générateur PDF, QR Code & Style");
-        setSize(560, 480);
+        setSize(580, 520);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
@@ -116,6 +116,41 @@ public class Fenetre extends JFrame {
 
         gbc.gridx = 0; gbc.gridy = 8; gbc.gridwidth = 3;
         add(panneauProjet, gbc);
+
+        barreProgression = new JProgressBar(0, 100);
+        barreProgression.setStringPainted(true);
+        barreProgression.setValue(0);
+        barreProgression.setString("Prêt");
+
+        gbc.gridx = 0; gbc.gridy = 9; gbc.gridwidth = 3;
+        add(barreProgression, gbc);
+    }
+
+    public void mettreAJourProgression(int valeur, String message) {
+        barreProgression.setValue(valeur);
+        barreProgression.setString(message);
+    }
+
+    public void reinitialiserProgression() {
+        barreProgression.setValue(0);
+        barreProgression.setString("Prêt");
+    }
+
+    public void setControlesActifs(boolean actif) {
+        boutonGenerer.setEnabled(actif);
+        boutonSauvegarderProjet.setEnabled(actif);
+        boutonChargerProjet.setEnabled(actif);
+        boutonSauvegarderProfil.setEnabled(actif);
+        boutonChargerProfil.setEnabled(actif);
+        boutonChoisirImage.setEnabled(actif);
+    }
+
+    public void afficherErreur(String message) {
+        JOptionPane.showMessageDialog(this, message, "Erreur de saisie / traitement", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void afficherSucces(String message) {
+        JOptionPane.showMessageDialog(this, message, "Succès", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public String getTexteSaisi() { return champTexte.getText(); }
@@ -142,11 +177,12 @@ public class Fenetre extends JFrame {
         }
     }
 
-    public int getLargeurMaxImage() {
-        try {
-            int l = Integer.parseInt(champLargeurImage.getText().trim());
-            return Math.min(Math.max(l, 20), 500);
-        } catch (NumberFormatException e) { return 180; }
+    public int getLargeurMaxImage() throws NumberFormatException {
+        int l = Integer.parseInt(champLargeurImage.getText().trim());
+        if (l < 20 || l > 500) {
+            throw new NumberFormatException("La largeur doit être comprise entre 20 et 500 px.");
+        }
+        return l;
     }
     public void setLargeurMaxImage(int l) { champLargeurImage.setText(String.valueOf(l)); }
 

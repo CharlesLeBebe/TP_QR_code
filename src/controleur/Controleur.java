@@ -4,6 +4,7 @@ import modele.*;
 import vue.Fenetre;
 
 import javax.swing.*;
+import java.io.File;
 
 public class Controleur {
     private Fenetre fenetre;
@@ -12,10 +13,8 @@ public class Controleur {
         this.fenetre = fenetre;
 
         this.fenetre.addGenererListener(e -> declencherGenerationGlobale());
-        
         this.fenetre.addSauvegarderProjetListener(e -> sauvegarderProjet());
         this.fenetre.addChargerProjetListener(e -> chargerProjet());
-
         this.fenetre.addSauvegarderProfilListener(e -> sauvegarderProfil());
         this.fenetre.addChargerProfilListener(e -> chargerProfil());
     }
@@ -24,33 +23,57 @@ public class Controleur {
         String saisie = fenetre.getTexteSaisi();
 
         if (saisie == null || saisie.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(fenetre, "Veuillez saisir du texte ou un lien !", "Erreur", JOptionPane.ERROR_MESSAGE);
+            fenetre.afficherErreur("Le champ 'Texte / Lien' est obligatoire pour générer le QR Code et le PDF.");
             return;
         }
 
-        Donnees donnees = new Donnees(saisie);
-        ProfilStyle style = new ProfilStyle(fenetre.getPoliceSelectionnee(), 12, fenetre.getCouleurChoisie());
+        SwingWorker<Void, Integer> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                fenetre.setControlesActifs(false);
 
-        String cheminQRCode = "qrcode.png";
-        String cheminPDF = "document_avec_qr.pdf";
+                fenetre.mettreAJourProgression(20, "Préparation des données...");
+                Thread.sleep(200);
 
-        try {
-            GenerateurQRCode.creerQRCode(donnees.getTexte(), 200, 200, cheminQRCode);
-            GenerateurPDF.creerPDF(
-                donnees.getTexte(),
-                cheminQRCode,
-                fenetre.getCheminImageChoisie(),
-                fenetre.getLargeurMaxImage(),
-                fenetre.getAlignementImage(),
-                style,
-                cheminPDF
-            );
+                Donnees donnees = new Donnees(saisie);
+                ProfilStyle style = new ProfilStyle(fenetre.getPoliceSelectionnee(), 12, fenetre.getCouleurChoisie());
+                String cheminQRCode = "qrcode.png";
+                String cheminPDF = "document_avec_qr.pdf";
 
-            JOptionPane.showMessageDialog(fenetre, "Succès ! Le PDF a été généré.", "Opération réussie", JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(fenetre, "Erreur : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
-        }
+                fenetre.mettreAJourProgression(50, "Génération du QR Code...");
+                GenerateurQRCode.creerQRCode(donnees.getTexte(), 200, 200, cheminQRCode);
+                Thread.sleep(200);
+
+                fenetre.mettreAJourProgression(80, "Création du document PDF...");
+                GenerateurPDF.creerPDF(
+                    donnees.getTexte(),
+                    cheminQRCode,
+                    fenetre.getCheminImageChoisie(),
+                    fenetre.getLargeurMaxImage(),
+                    fenetre.getAlignementImage(),
+                    style,
+                    cheminPDF
+                );
+                Thread.sleep(200);
+
+                fenetre.mettreAJourProgression(100, "Terminé !");
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                fenetre.setControlesActifs(true);
+                try {
+                    get();
+                    fenetre.afficherSucces("Le document PDF a été généré avec succès dans 'document_avec_qr.pdf'.");
+                } catch (Exception ex) {
+                    fenetre.reinitialiserProgression();
+                    fenetre.afficherErreur("Erreur lors de la génération du PDF.");
+                }
+            }
+        };
+
+        worker.execute();
     }
 
     private void sauvegarderProfil() {
@@ -60,17 +83,13 @@ public class Controleur {
             String chemin = fileChooser.getSelectedFile().getAbsolutePath();
             if (!chemin.endsWith(".style")) chemin += ".style";
 
-            ProfilStyle style = new ProfilStyle(
-                fenetre.getPoliceSelectionnee(),
-                12,
-                fenetre.getCouleurChoisie()
-            );
+            ProfilStyle style = new ProfilStyle(fenetre.getPoliceSelectionnee(), 12, fenetre.getCouleurChoisie());
 
             try {
                 GestionnaireFichiers.sauvegarderObjet(style, chemin);
-                JOptionPane.showMessageDialog(fenetre, "Profil de style sauvegardé !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+                fenetre.afficherSucces("Profil de style sauvegardé dans :\n" + chemin);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(fenetre, "Erreur lors de la sauvegarde du profil : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                fenetre.afficherErreur("Erreur lors de la sauvegarde du profil de style.");
             }
         }
     }
@@ -79,15 +98,16 @@ public class Controleur {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Charger un profil de style");
         if (fileChooser.showOpenDialog(fenetre) == JFileChooser.APPROVE_OPTION) {
+            File fichier = fileChooser.getSelectedFile();
             try {
-                ProfilStyle style = (ProfilStyle) GestionnaireFichiers.chargerObjet(fileChooser.getSelectedFile().getAbsolutePath());
+                ProfilStyle style = (ProfilStyle) GestionnaireFichiers.chargerObjet(fichier.getAbsolutePath());
 
                 fenetre.setPoliceSelectionnee(style.getNomPolice());
                 fenetre.setCouleurChoisie(style.getCouleurAwt());
 
-                JOptionPane.showMessageDialog(fenetre, "Profil de style appliqué avec succès !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+                fenetre.afficherSucces("Profil de style chargé avec succès !");
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(fenetre, "Fichier de profil invalide : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                fenetre.afficherErreur("Fichier de profil invalide ou corrompu.");
             }
         }
     }
@@ -110,9 +130,9 @@ public class Controleur {
 
             try {
                 GestionnaireFichiers.sauvegarderObjet(projet, chemin);
-                JOptionPane.showMessageDialog(fenetre, "Projet sauvegardé !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+                fenetre.afficherSucces("Projet sauvegardé dans :\n" + chemin);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(fenetre, "Erreur de sauvegarde : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                fenetre.afficherErreur("Erreur lors de la sauvegarde du projet.");
             }
         }
     }
@@ -121,8 +141,9 @@ public class Controleur {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Charger un projet");
         if (fileChooser.showOpenDialog(fenetre) == JFileChooser.APPROVE_OPTION) {
+            File fichier = fileChooser.getSelectedFile();
             try {
-                Projet projet = (Projet) GestionnaireFichiers.chargerObjet(fileChooser.getSelectedFile().getAbsolutePath());
+                Projet projet = (Projet) GestionnaireFichiers.chargerObjet(fichier.getAbsolutePath());
 
                 fenetre.setTexteSaisi(projet.getTexte());
                 fenetre.setCheminImageChoisie(projet.getCheminImageComplementaire());
@@ -134,9 +155,9 @@ public class Controleur {
                     fenetre.setCouleurChoisie(projet.getProfilStyle().getCouleurAwt());
                 }
 
-                JOptionPane.showMessageDialog(fenetre, "Projet chargé avec succès !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+                fenetre.afficherSucces("Projet chargé avec succès !");
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(fenetre, "Erreur de chargement : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                fenetre.afficherErreur("Fichier de projet invalide ou corrompu.");
             }
         }
     }
