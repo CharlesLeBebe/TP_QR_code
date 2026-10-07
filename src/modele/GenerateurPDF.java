@@ -12,7 +12,9 @@ import java.io.IOException;
 
 public class GenerateurPDF {
 
-    public static void creerPDF(String texteSaisi, String cheminQRCode, String cheminImageComplementaire, ProfilStyle style, String cheminSortiePDF) {
+    public static void creerPDF(String texteSaisi, String cheminQRCode, String cheminImageComplementaire,
+                                int largeurMaxImage, String alignementImage,
+                                ProfilStyle style, String cheminSortiePDF) {
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, new FileOutputStream(cheminSortiePDF));
@@ -32,8 +34,22 @@ public class GenerateurPDF {
             if (cheminImageComplementaire != null && !cheminImageComplementaire.trim().isEmpty()) {
                 try {
                     Image imageComplementaire = Image.getInstance(cheminImageComplementaire);
-                    imageComplementaire.scaleToFit(200, 200);
-                    imageComplementaire.setAlignment(Image.ALIGN_CENTER);
+
+                    imageComplementaire.scaleToFit(largeurMaxImage, 1000f);
+
+                    switch (alignementImage.toUpperCase()) {
+                        case "GAUCHE":
+                            imageComplementaire.setAlignment(Image.ALIGN_LEFT);
+                            break;
+                        case "DROITE":
+                            imageComplementaire.setAlignment(Image.ALIGN_RIGHT);
+                            break;
+                        case "CENTRE":
+                        default:
+                            imageComplementaire.setAlignment(Image.ALIGN_CENTER);
+                            break;
+                    }
+
                     document.add(imageComplementaire);
                     document.add(new Paragraph(" "));
                 } catch (Exception e) {
@@ -49,7 +65,7 @@ public class GenerateurPDF {
             }
 
             document.close();
-            System.out.println("PDF personnalisé généré avec succès !");
+            System.out.println("PDF généré avec succès !");
 
         } catch (DocumentException | IOException e) {
             e.printStackTrace();

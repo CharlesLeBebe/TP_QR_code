@@ -12,6 +12,11 @@ public class Fenetre extends JFrame {
     private JButton boutonCouleur;
     private JButton boutonChoisirImage;
     private JLabel labelImageChoisie;
+    
+
+    private JTextField champLargeurImage;
+    private JComboBox<String> comboAlignementImage;
+
     private JButton boutonGenerer;
 
     private Color couleurChoisie = Color.BLACK;
@@ -19,32 +24,29 @@ public class Fenetre extends JFrame {
 
     public Fenetre() {
         setTitle("Générateur PDF, QR Code & Style");
-        setSize(500, 320);
+        setSize(520, 380);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.insets = new Insets(6, 6, 6, 6);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 0; gbc.gridy = 0;
         add(new JLabel("Texte / Lien :"), gbc);
-
         champTexte = new JTextField(22);
         gbc.gridx = 1; gbc.gridy = 0; gbc.gridwidth = 2;
         add(champTexte, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 1;
         add(new JLabel("Police :"), gbc);
-
         comboPolices = new JComboBox<>(ProfilStyle.POLICES_DISPONIBLES);
         gbc.gridx = 1; gbc.gridy = 1; gbc.gridwidth = 2;
         add(comboPolices, gbc);
 
         gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 1;
-        add(new JLabel("Couleur du texte :"), gbc);
-
+        add(new JLabel("Couleur :"), gbc);
         boutonCouleur = new JButton("Choisir une couleur");
         boutonCouleur.setBackground(couleurChoisie);
         boutonCouleur.setForeground(Color.WHITE);
@@ -60,12 +62,10 @@ public class Fenetre extends JFrame {
         });
 
         gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 1;
-        add(new JLabel("Image (optionnel) :"), gbc);
-
+        add(new JLabel("Image :"), gbc);
         boutonChoisirImage = new JButton("Parcourir...");
-        gbc.gridx = 1; gbc.gridy = 3; gbc.gridwidth = 1;
+        gbc.gridx = 1; gbc.gridy = 3;
         add(boutonChoisirImage, gbc);
-
         labelImageChoisie = new JLabel("Aucune image");
         gbc.gridx = 2; gbc.gridy = 3;
         add(labelImageChoisie, gbc);
@@ -78,9 +78,27 @@ public class Fenetre extends JFrame {
             }
         });
 
+    
+        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 1;
+        add(new JLabel("Largeur Max (px) :"), gbc);
+
+        champLargeurImage = new JTextField("180", 6);
+        gbc.gridx = 1; gbc.gridy = 4; gbc.gridwidth = 2;
+        add(champLargeurImage, gbc);
+
+       
+        gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 1;
+        add(new JLabel("Position Image :"), gbc);
+
+        String[] positions = {"Centre", "Gauche", "Droite"};
+        comboAlignementImage = new JComboBox<>(positions);
+        gbc.gridx = 1; gbc.gridy = 5; gbc.gridwidth = 2;
+        add(comboAlignementImage, gbc);
+
+        // 7. Bouton Générer
         boutonGenerer = new JButton("Générer le PDF");
         boutonGenerer.setFont(new Font("Arial", Font.BOLD, 14));
-        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 3;
+        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 3;
         add(boutonGenerer, gbc);
     }
 
@@ -89,7 +107,20 @@ public class Fenetre extends JFrame {
     public Color getCouleurChoisie() { return couleurChoisie; }
     public String getCheminImageChoisie() { return cheminImageChoisie; }
 
-    public void addGenererListener(ActionListener listener) { 
-        boutonGenerer.addActionListener(listener); 
+    public int getLargeurMaxImage() {
+        try {
+            int largeur = Integer.parseInt(champLargeurImage.getText().trim());
+            return Math.min(Math.max(largeur, 20), 500);
+        } catch (NumberFormatException e) {
+            return 180; 
+        }
+    }
+
+    public String getAlignementImage() {
+        return (String) comboAlignementImage.getSelectedItem();
+    }
+
+    public void addGenererListener(ActionListener listener) {
+        boutonGenerer.addActionListener(listener);
     }
 }

@@ -42,7 +42,6 @@ public class Controleur {
 
         String cheminQRCode = "qrcode.png";
         String cheminPDF = "document_avec_qr.pdf";
-        String cheminImageComplementaire = fenetre.getCheminImageChoisie();
 
         try {
             GenerateurQRCode.creerQRCode(donnees.getTexte(), 200, 200, cheminQRCode);
@@ -50,20 +49,22 @@ public class Controleur {
             GenerateurPDF.creerPDF(
                 donnees.getTexte(),
                 cheminQRCode,
-                cheminImageComplementaire,
+                fenetre.getCheminImageChoisie(),
+                fenetre.getLargeurMaxImage(),
+                fenetre.getAlignementImage(),
                 style,
                 cheminPDF
             );
 
             JOptionPane.showMessageDialog(fenetre,
-                "Succès ! Le PDF stylisé a été généré.",
+                "Succès ! Le PDF avec l'image dimensionnée a été généré.",
                 "Opération réussie",
                 JOptionPane.INFORMATION_MESSAGE);
 
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(fenetre,
-                "Une erreur est survenue lors de la génération : " + ex.getMessage(),
+                "Une erreur est survenue : " + ex.getMessage(),
                 "Erreur",
                 JOptionPane.ERROR_MESSAGE);
         }
